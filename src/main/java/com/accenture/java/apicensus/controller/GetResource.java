@@ -39,7 +39,6 @@ public class GetResource extends MainResource {
                         return new RequestDTO(ssn, country);
                     })
                     .process(getOnePersonProcessor)
-                    .marshal().json(JsonLibrary.Jackson)
             .endRest()
             .get("/{country}")
                 .consumes(MediaType.APPLICATION_JSON_VALUE)
