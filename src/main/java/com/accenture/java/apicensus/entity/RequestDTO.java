@@ -11,5 +11,5 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class RequestDTO implements Serializable {
     private Integer ssn;
-    private String country;
+    private Country country;
 }

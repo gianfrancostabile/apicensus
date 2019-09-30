@@ -1,7 +1,7 @@
 HELP.md
 !**/src/main/**
 !**/src/test/**
-**/resources/persons.json
+**/resources/people/
 
 ##############################
 ## Java

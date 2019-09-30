@@ -1,11 +1,11 @@
 package com.accenture.java.apicensus.controller;
 
+import com.accenture.java.apicensus.entity.Country;
 import com.accenture.java.apicensus.entity.Person;
 import com.accenture.java.apicensus.entity.RequestDTO;
 import com.accenture.java.apicensus.entity.ResponseList;
 import com.accenture.java.apicensus.processor.GetOnePersonProcessor;
 import org.apache.camel.Exchange;
-import org.apache.camel.model.dataformat.JsonLibrary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -26,7 +26,7 @@ public class GetResource extends MainResource {
             .get("/{country}/{ssn}")
                 .produces(MediaType.APPLICATION_JSON_VALUE)
                 .param()
-                    .name("country").dataType("string").required(true)
+                    .name("country").dataType("country").required(true)
                 .endParam()
                 .param()
                     .name("ssn").dataType("int").required(true)
@@ -34,7 +34,7 @@ public class GetResource extends MainResource {
                 .route()
                     .setBody(exchange -> {
                         Integer ssn = exchange.getIn().getHeader("ssn", Integer.class);
-                        String country = exchange.getIn().getHeader("country", String.class);
+                        Country country = exchange.getIn().getHeader("country", Country.class);
 
                         return new RequestDTO(ssn, country);
                     })
@@ -45,7 +45,7 @@ public class GetResource extends MainResource {
                 .produces(MediaType.APPLICATION_JSON_VALUE)
                 .type(Integer[].class)
                 .param()
-                    .name("country").dataType("string").required(true)
+                    .name("country").dataType("country").required(true)
                 .endParam()
                 .route()
                     .process(exchange -> responseList = new ResponseList())
@@ -61,7 +61,7 @@ public class GetResource extends MainResource {
             .split(body())
                 .setBody(exchange -> {
                     Integer ssn = exchange.getIn().getBody(Integer.class);
-                    String country = exchange.getIn().getHeader("country", String.class);
+                    Country country = exchange.getIn().getHeader("country", Country.class);
 
                     return new RequestDTO(ssn, country);
                 })

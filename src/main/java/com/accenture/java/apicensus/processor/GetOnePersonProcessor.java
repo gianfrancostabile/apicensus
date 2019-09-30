@@ -16,7 +16,7 @@ public class
 GetOnePersonProcessor implements Processor {
 
     @Autowired
-    @Qualifier(value = "personService")
+    @Qualifier(value = "personFileService")
     private IPersonService iPersonService;
 
     @Override
@@ -27,7 +27,7 @@ GetOnePersonProcessor implements Processor {
         Object objectResponse = null;
 
         if (requestDTO != null && requestDTO.getSsn() != null
-                && requestDTO.getCountry() != null && !requestDTO.getCountry().isEmpty()) {
+                && requestDTO.getCountry() != null) {
 
             Optional<Person> optionalPerson = this.iPersonService
                 .findById(requestDTO.getSsn(), requestDTO.getCountry());

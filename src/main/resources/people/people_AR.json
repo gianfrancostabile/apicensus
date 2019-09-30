@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Luis",
+    "surname": "Perez",
+    "ssn": 12345678,
+    "bornDate": "1940-12-31T00:00:00.000000",
+    "country": "AR",
+    "genre": "Male"
+  },
+  {
+    "name": "Rodrigo",
+    "surname": "Limus",
+    "ssn": 56784356,
+    "bornDate": "1985-08-24T00:00:00.000000",
+    "country": "AR",
+    "genre": "Male"
+  }
+]
