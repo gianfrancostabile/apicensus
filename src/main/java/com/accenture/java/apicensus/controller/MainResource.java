@@ -10,9 +10,10 @@ public class MainResource extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        restConfiguration().port(9000).bindingMode(RestBindingMode.auto);
+        restConfiguration().bindingMode(RestBindingMode.auto);
+
         onException(Exception.class)
             .setHeader(Exchange.HTTP_RESPONSE_CODE, simple("500"))
-            .setBody(exchange -> "Something was wrong");
+            .setBody(exchange -> exchange.getIn().getBody(Exception.class).getMessage());
     }
 }

@@ -1,16 +1,22 @@
 package com.accenture.java.apicensus.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Data
 public class ResponseList implements Serializable {
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<Person> successList;
-    private List<Integer> errorList;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private List<Object> errorList;
 
     public ResponseList() {
         successList = new ArrayList<>();
@@ -23,9 +29,13 @@ public class ResponseList implements Serializable {
         }
     }
 
-    public void addError(Integer ssn) {
-        if (ssn != null) {
-            errorList.add(ssn);
+    public void addError(Object ssn) {
+        errorList.add((ssn == null) ? "null" : ssn);
+    }
+
+    public void addError(Object... ssns) {
+        if (ssns != null && ssns.length > 0) {
+            errorList.addAll(Arrays.asList(ssns));
         }
     }
 
