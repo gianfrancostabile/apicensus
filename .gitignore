@@ -1,9 +1,8 @@
 HELP.md
 !**/src/main/**
 !**/src/test/**
-**/resources/people/
-**/resources/database.properties
-**/resources/files.properties
+**/resources/
+!**/resources/application.properties
 
 ##############################
 ## Java
