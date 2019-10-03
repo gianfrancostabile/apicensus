@@ -1,9 +1,12 @@
 package com.accenture.java.apicensus.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -11,23 +14,25 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Document(value = "persons")
+@CompoundIndex(def = "{'ssn':1, 'country':1}", name = "unqSsnCountry")
 public class Person implements Serializable {
 
-    @JsonProperty("ssn")
+    @NotNull
     private Integer ssn;
 
-    @JsonProperty("name")
+    @NotNull @NotBlank
     private String name;
 
-    @JsonProperty("surname")
+    @NotNull @NotBlank
     private String surname;
 
-    @JsonProperty("bornDate")
+    @NotNull
     private LocalDateTime bornDate;
 
-    @JsonProperty("country")
+    @NotNull
     private Country country;
 
-    @JsonProperty("genre")
+    @NotNull @NotBlank
     private String genre;
 }

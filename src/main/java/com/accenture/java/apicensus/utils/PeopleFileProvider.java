@@ -21,10 +21,10 @@ public class PeopleFileProvider {
 
     private final Logger logger = LogManager.getLogger(this.getClass());
 
-    @Value("${file.people.prefix}")
+    @Value("${file.people.inmemory.prefix}")
     private String peopleFilePrefix;
 
-    @Value("${file.people.suffix}")
+    @Value("${file.people.inmemory.suffix}")
     private String peopleFileSuffix;
 
     private HashMap<Country, List<Person>> filesMap = new HashMap<>();

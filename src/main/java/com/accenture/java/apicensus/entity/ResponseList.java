@@ -33,7 +33,7 @@ public class ResponseList implements Serializable {
         errorList.add((ssn == null) ? "null" : ssn);
     }
 
-    public void addError(Object... ssns) {
+    public void addErrors(Object... ssns) {
         if (ssns != null && ssns.length > 0) {
             errorList.addAll(Arrays.asList(ssns));
         }

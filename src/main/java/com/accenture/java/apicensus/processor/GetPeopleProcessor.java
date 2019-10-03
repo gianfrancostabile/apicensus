@@ -10,17 +10,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.springframework.util.NumberUtils;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Optional;
 
 @Component
 public class GetPeopleProcessor implements Processor {
 
     @Autowired
-    @Qualifier(value = "personFileService")
+    @Qualifier(value = "personService")
     private IPersonService iPersonService;
 
     @Override
@@ -34,7 +31,7 @@ public class GetPeopleProcessor implements Processor {
             for (Object ssn : ssnList) {
                 String ssnValue = String.valueOf(ssn);
                 if (StringUtils.isNumeric(ssnValue)) {
-                    Optional<Person> optionalPerson = iPersonService.findById(Integer.parseInt(ssnValue), country);
+                    Optional<Person> optionalPerson = iPersonService.findOneBySsnAndCountry(Integer.parseInt(ssnValue), country);
                     if (optionalPerson.isPresent()) {
                         responseList.addSuccess(optionalPerson.get());
                     } else {
@@ -45,7 +42,7 @@ public class GetPeopleProcessor implements Processor {
                 }
             }
         } else if (ssnList != null) {
-            responseList.addError(ssnList);
+            responseList.addErrors(ssnList);
         }
 
         exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE, responseList.getStatusCode());

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +23,11 @@ public class PersonFileServiceImpl implements IPersonService {
     @Autowired
     private PeopleFileProvider peopleFileProvider;
 
+    @Override
+    public Optional<Person> save(@Valid Person person) {
+        return Optional.empty();
+    }
+
     /**
      * Returns an optional object with a person instance.
      *
@@ -32,7 +38,7 @@ public class PersonFileServiceImpl implements IPersonService {
      *          otherwise an empty optional.
      */
     @Override
-    public Optional<Person> findById(Integer ssn, Country country) {
+    public Optional<Person> findOneBySsnAndCountry(Integer ssn, Country country) {
         logger.info("Into PersonFileServiceImpl::findById(Long, String)");
         logger.debug("ssn[" + ssn + "], country[" + country + "]");
 
