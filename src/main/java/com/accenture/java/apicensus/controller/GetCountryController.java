@@ -4,6 +4,9 @@ import com.accenture.java.apicensus.entity.Country;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 
+/**
+ * @author Gian F. S.
+ */
 @Controller
 public class GetCountryController extends MainController {
 
@@ -12,6 +15,7 @@ public class GetCountryController extends MainController {
         super.configure();
 
         rest()
+            // GET rest method that returns the allow countries
             .get("/countries")
                 .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .route()
