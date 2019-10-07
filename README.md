@@ -65,6 +65,7 @@ Now you can do three things.
 You have to create a file with the naming convention used in 
 `${file.people.ftp.file}` property with the next format:
 
+`
 [
     {
         "ssn": 00000000,
@@ -78,6 +79,8 @@ You have to create a file with the naming convention used in
     {},
     {}
 ]
+`
+
 
 and add it into the folder used in `${file.people.ftp.folder}` property.
 This will add the people from the file into the database.
