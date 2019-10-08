@@ -3,12 +3,67 @@
 The main functionality of this application is search persons via rest camel endpoints.
 
 ## Contents
+*  [Prerequisites](#prerequisites)
 *  [First steps](#first-steps)
 *  [After run](#after-run)
     *  [Ask for allowed countries](#ask-for-the-allowed-countries)
     *  [Search people data](#search-people-data)
     *  [Add people into the database](#add-people-into-the-database)
   
+
+## Prerequisites
+*  Java 8
+    1.  Download the file from [Oracle site](https://www.oracle.com/technetwork/java/javase/downloads/index.html)
+    2.  Install the downloaded file.
+    3.  Set up `JAVA_HOME` environment variable:
+        1. Control Panel > System > Advanced system settings > Environment variables
+        2. Go to System variables section and make sure the JAVA_HOME variable is found.
+        3. If it wasn't found, create it.
+        4. New > Variable Name: JAVA_HOME > Browse Directory... > Search your java installation folder
+        5. Click OK
+        6. Edit the `Path` variable and add the next line `%JAVA_HOME%\bin`
+        7. Done
+    4.  Check your java version `javac --version` 
+
+<br>
+
+*  Apache Maven Project
+    1.  Is mandatory have Java already installed
+    2.  Download the file from [Apache Maven Project site](https://maven.apache.org/download.cgi)
+    3.  Extract the downloaded .zip file
+    4.  Set up `M2_HOME` environment variable:
+        1. Control Panel > System > Advanced system settings > Environment variables
+        2. Go to System variables section and make sure the M2_HOME variable is found.
+        3. If it wasn't found, create it.
+        4. New > Variable Name: M2_HOME > Browse Directory... > Search your maven installation folder
+        5. Click OK
+        6. Edit the `Path` variable and add the next line `%M2_HOME%\bin`
+        7. Done
+    5.  Check your maven version `mvn --version` 
+
+<br>
+
+*  Git
+    1.  Install Git from [Git-scm site](https://git-scm.com/downloads)
+    2.  Check your git version `git --version`
+    3.  Then configure your git credentials with
+        ```
+            git config --global user.name "Your name"
+            git config --global user.email "email@email"
+        ```
+    4.  Clone this repository using the next command `git clone https://gitlab.com/gian.franco.stabile/apicensus.git`
+
+<br>
+
+*  Integrated Development Environment (IDE)
+    *  [IntelliJ IDEA](https://www.jetbrains.com/idea/download/)
+    *  [Eclipse](https://www.eclipse.org/downloads/)
+    *  [Apache NetBeans](https://netbeans.apache.org/download/index.html)
+    *  ...
+
+<br>
+    
+*  [Lombok](https://projectlombok.org/download)
 
 ## First steps
 You need to add 3 resources files, each one have to be added into 
