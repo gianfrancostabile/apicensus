@@ -1,10 +1,8 @@
 package com.accenture.java.apicensus.controller;
 
 import com.accenture.java.apicensus.entity.Endpoint;
-import com.accenture.java.apicensus.exception.FindPersonException;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
-import org.springframework.stereotype.Component;
 
 /**
  * Configure all controllers with default values,
@@ -12,7 +10,6 @@ import org.springframework.stereotype.Component;
  *
  * @author Gian F. S.
  */
-@Component
 public class MainController extends RouteBuilder {
 
     @Override
@@ -27,8 +24,5 @@ public class MainController extends RouteBuilder {
 
         onException(Exception.class)
             .to(Endpoint.DIRECT_INTERNAL_SERVER_ERROR.endpoint());
-
-        onException(FindPersonException.class)
-            .to(Endpoint.DIRECT_BAD_REQUEST.endpoint());
     }
 }

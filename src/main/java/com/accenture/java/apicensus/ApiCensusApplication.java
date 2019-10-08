@@ -15,7 +15,7 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource({
 	"classpath:application.properties",
 	"classpath:database.properties",
-	"classpath:files.properties",
+	"classpath:files.properties"
 })
 @ImportResource({ "classpath:context.xml" })
 public class ApiCensusApplication {

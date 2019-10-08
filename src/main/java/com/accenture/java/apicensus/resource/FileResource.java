@@ -1,11 +1,11 @@
 package com.accenture.java.apicensus.resource;
 
+import com.accenture.java.apicensus.entity.Endpoint;
 import com.accenture.java.apicensus.entity.dto.PersonDTO;
-import com.accenture.java.apicensus.processor.InsertPersonProcessor;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.mongodb.MongoWriteException;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -23,9 +23,6 @@ public class FileResource extends RouteBuilder {
     @Value("${file.people.ftp.file}")
     private String file;
 
-    @Autowired
-    private InsertPersonProcessor insertPersonProcessor;
-
     @Override
     public void configure() throws Exception {
         /*
@@ -41,12 +38,17 @@ public class FileResource extends RouteBuilder {
                 .unmarshal().json(JsonLibrary.Jackson, PersonDTO[].class)
                 .log("New file was added into " + folder)
                 .split(body())
-                    .process(insertPersonProcessor)
+                    .doTry()
+                        .to(Endpoint.DIRECT_INSERT_DB_PERSON.endpoint())
+                    .doCatch(MongoWriteException.class)
+                        .log("The person already exists write.")
+                    .doCatch(Exception.class)
+                        .log("A person is invalid, it has fields in null. ${in.body}")
+                    .endDoTry()
                 .end()
             .endDoTry()
             .doCatch(MismatchedInputException.class)
-                .log("Cannot deserialize the file content to Person[] object: ")
-                .log("${body}")
+                .log("Cannot deserialize the file content to Person[] object: ${in.body}")
             .endDoTry();
     }
 }

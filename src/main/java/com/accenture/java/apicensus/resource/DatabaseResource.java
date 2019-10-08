@@ -1,8 +1,8 @@
-package com.accenture.java.apicensus.repository;
+package com.accenture.java.apicensus.resource;
 
+import com.accenture.java.apicensus.entity.Endpoint;
 import com.accenture.java.apicensus.entity.Person;
 import com.accenture.java.apicensus.entity.dto.FindOnePersonDTO;
-import com.accenture.java.apicensus.entity.Endpoint;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
@@ -35,8 +35,7 @@ public class DatabaseResource extends RouteBuilder {
         // Saves the person into the database
         from(Endpoint.DIRECT_INSERT_DB_PERSON.endpoint())
             .to(personMongoDBEndpoint + "&operation=insert")
-            .log("A Person was added.")
-            .log("${body}");
+            .log("A Person was added. ${in.body}");
 
         // Search the person by ssn and country
         from(Endpoint.DIRECT_FINDONEBY_SSN_AND_COUNTRY.endpoint())

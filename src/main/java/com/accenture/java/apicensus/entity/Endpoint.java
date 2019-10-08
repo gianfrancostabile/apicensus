@@ -18,7 +18,7 @@ public enum Endpoint {
 
     private String endpoint;
 
-    private Endpoint(String endpoint) {
+    Endpoint(String endpoint) {
         this.endpoint = endpoint;
     }
 
