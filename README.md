@@ -4,24 +4,22 @@ The main functionality of this application is search persons via rest camel endp
 
 ## First steps
 You need to add 3 resources files, each one have to be added into 
-`src\main\resources` folder. Then i will describe list each file with its name
+`src\main\resources` folder. Now i will enum a list of files with its name
 and content:
 
-1.  database.properties (the next fields are mandatory)
-`
+**database.properties**
     spring.data.mongodb.database=
     spring.data.mongodb.host=
     spring.data.mongodb.port=
 
-    ...
-`
-2.  file.properties
-`
+**file.properties**
     file.people.ftp.folder=
     file.people.ftp.file=
-`
 
 With those files you can run the application.
+
+**Note:** the database.properties and context.xml are used to create a default
+MongoDB bean.
 
 ## After run
 Now you can do three things.
