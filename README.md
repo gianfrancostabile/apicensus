@@ -23,7 +23,7 @@ The main functionality of this application is search persons via rest camel endp
         5. Click OK
         6. Edit the `Path` variable and add the next line `%JAVA_HOME%\bin`
         7. Done
-    4.  Check your java version `javac --version` 
+    4.  Check your java version with `javac --version` 
 
 <br>
 
@@ -39,7 +39,7 @@ The main functionality of this application is search persons via rest camel endp
         5. Click OK
         6. Edit the `Path` variable and add the next line `%M2_HOME%\bin`
         7. Done
-    5.  Check your maven version `mvn --version` 
+    5.  Check your maven version with `mvn --version` 
 
 <br>
 
@@ -52,6 +52,21 @@ The main functionality of this application is search persons via rest camel endp
             git config --global user.email "email@email"
         ```
     4.  Clone this repository using the next command `git clone https://gitlab.com/gian.franco.stabile/apicensus.git`
+
+<br>
+
+*  MongoDB
+    1.  Install MongoDB from [MongoDB Download Center](https://www.mongodb.com/download-center/community?jmp=docs)
+    2.  Run the installer
+    3.  Set up `MONGODB_HOME` environment variable:
+        1. Control Panel > System > Advanced system settings > Environment variables
+        2. Go to System variables section and make sure the MONGODB_HOME variable is found.
+        3. If it wasn't found, create it.
+        4. New > Variable Name: MONGODB_HOME > Browse Directory... > Search your maven installation folder
+        5. Click OK
+        6. Edit the `Path` variable and add the next line `%MONGODB_HOME%\bin`
+        7. Done
+    5.  Check your mongodb version with `mongo --version` 
 
 <br>
 
