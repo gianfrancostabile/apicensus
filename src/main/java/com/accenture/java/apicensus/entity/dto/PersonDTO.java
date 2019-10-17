@@ -2,10 +2,12 @@ package com.accenture.java.apicensus.entity.dto;
 
 import com.accenture.java.apicensus.entity.Country;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
+import io.swagger.annotations.ApiModel;
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -14,11 +16,13 @@ import java.time.LocalDate;
  * @author Gian F. S.
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Builder
+@ApiModel(description = "Represents a person of the system")
 public class PersonDTO implements Serializable {
 
     @NotNull
+    @Min(1000000)
+    @Max(999999999)
     private Integer ssn;
 
     @NotNull

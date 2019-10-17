@@ -1,12 +1,12 @@
 package com.accenture.java.apicensus.resource;
 
-import com.accenture.java.apicensus.entity.Endpoint;
 import com.accenture.java.apicensus.entity.dto.PersonDTO;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.accenture.java.apicensus.mapper.PersonMapper;
+import com.accenture.java.apicensus.utils.Endpoint;
+import com.accenture.java.apicensus.utils.RouteID;
 import com.mongodb.MongoWriteException;
-import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.bean.validator.BeanValidationException;
 import org.apache.camel.model.dataformat.JsonLibrary;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,16 +15,12 @@ import org.springframework.stereotype.Component;
  * @author Gian F. S.
  */
 @Component
-public class FileResource extends RouteBuilder {
-
-    @Value("${file.people.ftp.folder}")
-    private String folder;
-
-    @Value("${file.people.ftp.file}")
-    private String file;
+public class FileResource extends ExceptionCatcherResource {
 
     @Override
     public void configure() throws Exception {
+        super.configure();
+
         /*
             Works like Observer-Observable pattern, if a new file is added
             inside the folder, it will be processed.
@@ -33,22 +29,22 @@ public class FileResource extends RouteBuilder {
             be deleted. And antInclude determinate the naming convention
             of the file.
          */
-        from("file:" + folder + "?delete=true&antInclude=" + file)
-            .doTry()
-                .unmarshal().json(JsonLibrary.Jackson, PersonDTO[].class)
-                .log("New file was added into " + folder)
-                .split(body())
-                    .doTry()
-                        .to(Endpoint.DIRECT_INSERT_DB_PERSON.endpoint())
-                    .doCatch(MongoWriteException.class)
-                        .log("The person already exists write.")
-                    .doCatch(Exception.class)
-                        .log("A person is invalid, it has fields in null. ${in.body}")
-                    .endDoTry()
-                .end()
-            .endDoTry()
-            .doCatch(MismatchedInputException.class)
-                .log("Cannot deserialize the file content to Person[] object: ${in.body}")
-            .endDoTry();
+        from(Endpoint.FILE_PERSON_FTP).routeId(RouteID.FILE_PERSON_FTP)
+            .unmarshal().json(JsonLibrary.Jackson, PersonDTO[].class)
+            .log("New file was added")
+            // Convert the body from PersonDTO to Person
+            .to(Endpoint.BEAN_VALIDATOR_DEFAULT_GROUP)
+            .bean(PersonMapper.class, "toEntity(java.util.List)")
+            .split(body())
+                // I don't want to catch these exception in an global catcher, I want to continue the file process
+                .doTry()
+                    .to(Endpoint.DIRECT_INSERT_DB_PERSON)
+                .doCatch(BeanValidationException.class)
+                    .log("The person has null fields.")
+                .doCatch(MongoWriteException.class)
+                    .log("The person already exists.").doCatch(Exception.class)
+                    .log("A person is invalid, it has fields in null. ${in.body}")
+                .endDoTry()
+            .end();
     }
 }

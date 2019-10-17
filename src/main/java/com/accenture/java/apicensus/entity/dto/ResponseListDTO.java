@@ -2,6 +2,8 @@ package com.accenture.java.apicensus.entity.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,11 +15,14 @@ import java.util.List;
  * @author Gian F. S.
  */
 @Data
+@ApiModel(description = "Represents the response after the post persons request")
 public class ResponseListDTO implements Serializable {
 
+    @ApiModelProperty(value = "List of persons successfully processed")
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<PersonDTO> successList;
 
+    @ApiModelProperty(value = "List of ssns wrongly processed")
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<Object> errorList;
 
@@ -43,7 +48,7 @@ public class ResponseListDTO implements Serializable {
      * Adds the object to the errors list.
      * <br><br>
      * If the value is <b>null</b>, it will change to "null".
-
+     *
      * @param ssn the wrong value for a ssn
      */
     public void addError(Object ssn) {
@@ -68,7 +73,7 @@ public class ResponseListDTO implements Serializable {
      * Returns the appropriate status code, it depends of
      * list values.
      * <br><br>
-     *
+     * <p>
      * List of possible status codes (SL -> Success List; EL -> Error List):
      * <ul>
      *      <li>
@@ -89,8 +94,7 @@ public class ResponseListDTO implements Serializable {
      */
     @JsonIgnore
     public int getStatusCode() {
-        boolean isSuccessEmpty = getSuccessList().isEmpty(),
-            isErrorEmpty = getErrorList().isEmpty();
+        boolean isSuccessEmpty = getSuccessList().isEmpty(), isErrorEmpty = getErrorList().isEmpty();
 
         int statusCode;
         if (!isErrorEmpty) {

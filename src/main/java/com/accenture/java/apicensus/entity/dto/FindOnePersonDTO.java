@@ -1,18 +1,21 @@
 package com.accenture.java.apicensus.entity.dto;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
  * @author Gian F. S.
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Builder
 public class FindOnePersonDTO implements Serializable {
+
+    @NotNull
     private Integer ssn;
+
+    @NotNull
     private String country;
 }

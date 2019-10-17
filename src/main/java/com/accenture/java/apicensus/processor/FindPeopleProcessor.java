@@ -1,17 +1,16 @@
 package com.accenture.java.apicensus.processor;
 
 import com.accenture.java.apicensus.entity.Country;
-import com.accenture.java.apicensus.entity.Endpoint;
 import com.accenture.java.apicensus.entity.Person;
 import com.accenture.java.apicensus.entity.dto.FindOnePersonDTO;
 import com.accenture.java.apicensus.entity.dto.ResponseListDTO;
 import com.accenture.java.apicensus.mapper.PersonMapper;
+import com.accenture.java.apicensus.utils.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -28,9 +27,6 @@ public class FindPeopleProcessor implements Processor {
 
     @Autowired
     private PersonMapper personMapper;
-
-    @Value("${camel.endpoint.mongodb.people}")
-    private String personMongoDBEndpoint;
 
     /**
      * Process the find person request and sets the
@@ -50,7 +46,6 @@ public class FindPeopleProcessor implements Processor {
      *
      * @param exchange the exchange
      * @throws Exception the exception
-     *
      * @see Exchange
      * @see ResponseListDTO
      * @see Objects#nonNull(Object)
@@ -72,7 +67,8 @@ public class FindPeopleProcessor implements Processor {
                     String ssnString = String.valueOf(ssn);
 
                     if (StringUtils.isNumeric(ssnString)) {
-                        Optional<Person> optionalPerson = findPerson(Integer.parseInt(ssnString), country.name(), exchange);
+                        Optional<Person> optionalPerson = findPerson(Integer.parseInt(ssnString), country.name(),
+                            exchange);
 
                         if (optionalPerson.isPresent()) {
                             responseListDTO.addSuccess(personMapper.toDTO(optionalPerson.get()));
@@ -88,8 +84,8 @@ public class FindPeopleProcessor implements Processor {
             }
         }
 
-        exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE, responseListDTO.getStatusCode());
-        exchange.getOut().setBody(responseListDTO);
+        exchange.getIn().setHeader(Exchange.HTTP_RESPONSE_CODE, responseListDTO.getStatusCode());
+        exchange.getIn().setBody(responseListDTO);
     }
 
     /**
@@ -99,28 +95,22 @@ public class FindPeopleProcessor implements Processor {
      * exchange param and calls the camel endpoint
      * responsible for the search.
      *
-     * @param ssn the person ssn
-     * @param country the person nationality
+     * @param ssn      the person ssn
+     * @param country  the person nationality
      * @param exchange the exchange, used to create
      *                 the ProducerTemplate
-     *
      * @return an optional with the person.
-     *
      * @see ProducerTemplate
      * @see ProducerTemplate#requestBody(org.apache.camel.Endpoint, Object, Class)
      * @see Optional
      */
     private Optional<Person> findPerson(Integer ssn, String country, Exchange exchange) {
-        FindOnePersonDTO findOnePersonDTO = new FindOnePersonDTO(ssn, country);
-
         // creates the ProducerTemplate to call a Camel endpoint
         ProducerTemplate producerTemplate = exchange.getContext().createProducerTemplate();
-        producerTemplate.setDefaultEndpointUri(Endpoint.DIRECT_DEFAULT_ENDPOINT.endpoint());
+        producerTemplate.setDefaultEndpointUri(Endpoint.DIRECT_DEFAULT_ENDPOINT);
 
         // calls the camel endpoint
-        return producerTemplate.requestBody(
-            Endpoint.DIRECT_FINDONEBY_SSN_AND_COUNTRY.endpoint(),
-            findOnePersonDTO,
-            Optional.class);
+        return producerTemplate.requestBody(Endpoint.DIRECT_FINDONEBY_SSN_AND_COUNTRY,
+            FindOnePersonDTO.builder().ssn(ssn).country(country).build(), Optional.class);
     }
 }
