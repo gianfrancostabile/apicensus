@@ -9,6 +9,7 @@ The main functionality of this application is search persons via rest camel endp
     *  [Ask for allowed countries](#ask-for-the-allowed-countries)
     *  [Search people data](#search-people-data)
     *  [Add people into the database](#add-people-into-the-database)
+*  [Swagger](#swagger)
   
 
 ## Prerequisites
@@ -166,3 +167,14 @@ You have to create a file with the naming convention used in
 
 and add it into the folder used in `${file.people.ftp.folder}` property.
 This will add the people from the file into the database.
+
+
+## Swagger
+This projects has integrated Swagger. Swagger is an API description format for REST APIs.
+An OpenAPI file allows you to describe your entire API, including:
+*   Available endpoints (/countries) and operations on each endpoint (GET /countries, POST /country, ...)
+*   Operation parameters Input and output for each operation
+*   Authentication methods
+*   Contact information, license, terms of use and other information.
+
+You can access from your explorer by typing `http://localhost:9090/census/swagger-ui`.
