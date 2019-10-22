@@ -8,6 +8,8 @@ public abstract class ExceptionCatcherResource extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        onException(MismatchedInputException.class).to(Endpoint.DIRECT_MISMATCHED_INPUT_FILE);
+        onException(MismatchedInputException.class)
+            .handled(true)
+            .to(Endpoint.DIRECT_MISMATCHED_INPUT_FILE);
     }
 }

@@ -8,8 +8,8 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Gian F. S.
@@ -39,8 +39,22 @@ public class ResponseListDTO implements Serializable {
      * @param personDTO the person instance to add
      */
     public void addSuccess(PersonDTO personDTO) {
-        if (personDTO != null) {
+        if (Objects.nonNull(personDTO)) {
             successList.add(personDTO);
+        }
+    }
+
+    /**
+     * Adds the people to the success list.
+     * <br><br>
+     * If the list of people is {@code null} or <b>empty</b>,
+     * no value will be added to the errors list.
+     *
+     * @param peopleList the list of wrong values for an ssn
+     */
+    public void addSuccess(List<PersonDTO> peopleList) {
+        if (Objects.nonNull(peopleList) && !peopleList.isEmpty()) {
+            successList.addAll(peopleList);
         }
     }
 
@@ -52,20 +66,20 @@ public class ResponseListDTO implements Serializable {
      * @param ssn the wrong value for a ssn
      */
     public void addError(Object ssn) {
-        errorList.add((ssn == null) ? "null" : ssn);
+        errorList.add(Objects.nonNull(ssn) ? ssn : "null");
     }
 
     /**
      * Adds all objects to the errors list.
      * <br><br>
-     * If the list of objects is <b>null</b> or <b>empty</b>,
+     * If the list of objects is {@code null} or <b>empty</b>,
      * no value will be added to the errors list.
      *
-     * @param ssns the list of wrong values for an ssn
+     * @param ssnList the list of wrong values for an ssn
      */
-    public void addErrors(Object... ssns) {
-        if (ssns != null && ssns.length > 0) {
-            errorList.addAll(Arrays.asList(ssns));
+    public void addErrors(List<Object> ssnList) {
+        if (Objects.nonNull(ssnList) && !ssnList.isEmpty()) {
+            errorList.addAll(ssnList);
         }
     }
 

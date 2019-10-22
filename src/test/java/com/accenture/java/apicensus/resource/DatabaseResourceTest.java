@@ -296,7 +296,7 @@ public class DatabaseResourceTest extends CamelTestSupport {
         AdviceWithRouteBuilder adviceWithRouteBuilder = new AdviceWithRouteBuilder() {
             @Override
             public void configure() {
-                // intercept mongodb endpoint to mock:findOneByQuerySuccess and do something else
+                // intercept mongodb endpoint to mock:findOneByQueryFail and do something else
                 interceptSendToEndpoint(Endpoint.MONGODB_PERSON_FINDONEBY_SSNANDCOUNTRY).skipSendToOriginalEndpoint()
                     .to(Endpoint.DIRECT_FINDONEBYQUERY_FAIL);
             }

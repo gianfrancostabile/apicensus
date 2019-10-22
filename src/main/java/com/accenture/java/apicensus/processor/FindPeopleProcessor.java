@@ -3,6 +3,7 @@ package com.accenture.java.apicensus.processor;
 import com.accenture.java.apicensus.entity.Country;
 import com.accenture.java.apicensus.entity.Person;
 import com.accenture.java.apicensus.entity.dto.FindOnePersonDTO;
+import com.accenture.java.apicensus.entity.dto.PersonDTO;
 import com.accenture.java.apicensus.entity.dto.ResponseListDTO;
 import com.accenture.java.apicensus.mapper.PersonMapper;
 import com.accenture.java.apicensus.utils.Endpoint;
@@ -10,11 +11,15 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * The processor responsible to
@@ -25,6 +30,8 @@ import java.util.Optional;
 @Component
 public class FindPeopleProcessor implements Processor {
 
+    private final Logger logger = LogManager.getLogger(this.getClass());
+
     @Autowired
     private PersonMapper personMapper;
 
@@ -32,85 +39,96 @@ public class FindPeopleProcessor implements Processor {
      * Process the find person request and sets the
      * out body with a response and status code.
      * <br><br>
-     * First of all gets the request body and country value from
-     * the header, and validates if them aren't null.<br>
-     * If the country is null but the body aren't, the content
-     * will be added to the error list.<br>
-     * If every was OK, iterate the array and validates if each
-     * value is numeric. After passing the validation, will search
-     * the person, if the person is found, it will be added to
-     * the success list, otherwise it ssn will be added to errors
-     * the list.<br>
-     * Finally the outcome will be set to the out body with the
-     * appropriate status code.
+     * First of all, find each ssn and returns all
+     * available person information.<br>
+     * After that, creates the error list with all
+     * the ssn that have not processed.<br>
+     * Finally, sets each list into the response
      *
      * @param exchange the exchange
-     * @throws Exception the exception
+     *
      * @see Exchange
      * @see ResponseListDTO
-     * @see Objects#nonNull(Object)
-     * @see FindOnePersonDTO
-     * @see StringUtils#isNumeric(CharSequence)
-     * @see #findPerson(Integer, String, Exchange)
-     * @see Optional
      * @see ResponseListDTO#getStatusCode()
      */
     @Override
-    public void process(Exchange exchange) throws Exception {
+    public void process(Exchange exchange) {
         ResponseListDTO responseListDTO = new ResponseListDTO();
 
-        Object[] ssnList = exchange.getIn().getBody(Object[].class);
-        if (Objects.nonNull(ssnList)) {
-            Country country = exchange.getIn().getHeader("country", Country.class);
-            if (Objects.nonNull(country)) {
-                for (Object ssn : ssnList) {
-                    String ssnString = String.valueOf(ssn);
+        try {
+            List<Object> ssnListRequest = exchange.getIn().getMandatoryBody(List.class);
 
-                    if (StringUtils.isNumeric(ssnString)) {
-                        Optional<Person> optionalPerson = findPerson(Integer.parseInt(ssnString), country.name(),
-                            exchange);
+            List<PersonDTO> peopleListSuccess = findPeople(exchange, ssnListRequest);
+            List<Object> ssnListError = getErrorList(ssnListRequest, peopleListSuccess);
 
-                        if (optionalPerson.isPresent()) {
-                            responseListDTO.addSuccess(personMapper.toDTO(optionalPerson.get()));
-                        } else {
-                            responseListDTO.addError(ssnString);
-                        }
-                    } else {
-                        responseListDTO.addError(ssn);
-                    }
-                }
-            } else {
-                responseListDTO.addErrors(ssnList);
-            }
+            responseListDTO.addSuccess(peopleListSuccess);
+            responseListDTO.addErrors(ssnListError);
+        } catch (Exception e) {
+            logger.debug("An exception occurred during body recovery.");
+        } finally {
+            exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE, responseListDTO.getStatusCode());
+            exchange.getOut().setBody(responseListDTO);
         }
-
-        exchange.getIn().setHeader(Exchange.HTTP_RESPONSE_CODE, responseListDTO.getStatusCode());
-        exchange.getIn().setBody(responseListDTO);
     }
 
     /**
-     * Returns an optional with the person.
+     * Finds the person information for each ssn.
      * <br><br>
-     * It creates a ProducerTemplate depending on
-     * exchange param and calls the camel endpoint
-     * responsible for the search.
+     * Use the stream method functionality to filter and
+     * map the list.<br>
+     * During the stream process, a camel endpoint is called to
+     * retrieve the person data, using {@link ProducerTemplate}.<br>
+     * Finally, each person are collected into a list.
      *
-     * @param ssn      the person ssn
-     * @param country  the person nationality
-     * @param exchange the exchange, used to create
-     *                 the ProducerTemplate
-     * @return an optional with the person.
-     * @see ProducerTemplate
-     * @see ProducerTemplate#requestBody(org.apache.camel.Endpoint, Object, Class)
-     * @see Optional
+     * @param exchange the exchange.
+     * @param ssnListRequest the request list that contains
+     *                       each ssn.
+     *
+     * @return the list of people data.
      */
-    private Optional<Person> findPerson(Integer ssn, String country, Exchange exchange) {
-        // creates the ProducerTemplate to call a Camel endpoint
+    private List<PersonDTO> findPeople(Exchange exchange, List<Object> ssnListRequest) {
+        String country = exchange.getIn().getHeader("country", Country.class).name();
+
         ProducerTemplate producerTemplate = exchange.getContext().createProducerTemplate();
         producerTemplate.setDefaultEndpointUri(Endpoint.DIRECT_DEFAULT_ENDPOINT);
 
-        // calls the camel endpoint
-        return producerTemplate.requestBody(Endpoint.DIRECT_FINDONEBY_SSN_AND_COUNTRY,
-            FindOnePersonDTO.builder().ssn(ssn).country(country).build(), Optional.class);
+        return ssnListRequest.stream()
+            .filter(Objects::nonNull)
+            .map(Object::toString)
+            .filter(StringUtils::isNumeric)
+            .map(Integer::parseInt)
+            .map(ssn -> FindOnePersonDTO.builder().ssn(ssn).country(country).build())
+            .map(findOnePersonDTO -> (Optional<Person>) producerTemplate
+                .requestBody(Endpoint.DIRECT_FINDONEBY_SSN_AND_COUNTRY, findOnePersonDTO, Optional.class))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .map(personMapper::toDTO)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns the list of wrong ssn.
+     * <br><br>
+     * The ssnListRequest is the list of requested ssn
+     * and peopleListSuccess is the list of people
+     * successfully processed.<br>
+     * The error list is contained by ssn with {@code null},
+     * non numeric and non-existent person values.
+     *
+     * @param ssnListRequest is the list of requested ssn
+     * @param peopleListSuccess is the list of people
+     *                          successfully processed
+     *
+     * @return the list of wrong ssn.
+     */
+    private List<Object> getErrorList(List<Object> ssnListRequest, List<PersonDTO> peopleListSuccess) {
+        return ssnListRequest.stream()
+            .filter(ssn ->
+                Objects.isNull(ssn) ||
+                !StringUtils.isNumeric(ssn.toString()) ||
+                peopleListSuccess.parallelStream()
+                    .map(PersonDTO::getSsn)
+                    .noneMatch(ssnPeople -> ssnPeople.equals(Integer.parseInt(ssn.toString()))))
+            .collect(Collectors.toList());
     }
 }

@@ -14,6 +14,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+/**
+ * @author Gian F. S.
+ */
 @JsonDeserialize(builder = Person.PersonBuilder.class)
 @Builder
 @Getter

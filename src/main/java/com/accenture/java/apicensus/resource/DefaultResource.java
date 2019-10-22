@@ -10,11 +10,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultResource extends ExceptionCatcherResource {
 
+    /**
+     * Creates default endpoints.
+     *
+     * @throws Exception the exception
+     */
     @Override
     public void configure() throws Exception {
         super.configure();
 
         // A default endpoint, used for ProducerTemplate
-        from(Endpoint.DIRECT_DEFAULT_ENDPOINT).routeId(RouteID.DEFAULT_ROUTE).log("I'm a default endpoint");
+        from(Endpoint.DIRECT_DEFAULT_ENDPOINT).routeId(RouteID.DEFAULT_ROUTE)
+            .log("I'm a default endpoint");
     }
 }

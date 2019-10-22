@@ -6,7 +6,9 @@ import com.accenture.java.apicensus.entity.dto.PersonDTO;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -31,10 +33,10 @@ public class PersonMapper {
      */
     public Person toEntity(PersonDTO personDTO) {
         Person person = null;
-        if (personDTO != null) {
+        if (Objects.nonNull(personDTO)) {
             person = Person.builder().ssn(personDTO.getSsn()).name(personDTO.getName()).surname(personDTO.getSurname())
-                .bornDate(personDTO.getBornDate() != null ? personDTO.getBornDate().toString() : null)
-                .country(personDTO.getCountry() != null ? personDTO.getCountry().name() : null)
+                .bornDate(Objects.nonNull(personDTO.getBornDate()) ? personDTO.getBornDate().toString() : null)
+                .country(Objects.nonNull(personDTO.getCountry()) ? personDTO.getCountry().name() : null)
                 .genre(personDTO.getGenre()).build();
         }
         return person;
@@ -52,8 +54,8 @@ public class PersonMapper {
      * @see #toEntity(PersonDTO)
      */
     public List<Person> toEntity(List<PersonDTO> persons) {
-        List<Person> result = null;
-        if (persons != null) {
+        List<Person> result = new ArrayList<>();
+        if (Objects.nonNull(persons)) {
             result = persons.stream().map(this::toEntity).collect(Collectors.toList());
         }
         return result;
@@ -72,10 +74,10 @@ public class PersonMapper {
      */
     public PersonDTO toDTO(Person person) {
         PersonDTO personDTO = null;
-        if (person != null) {
+        if (Objects.nonNull(person)) {
             personDTO = PersonDTO.builder().ssn(person.getSsn()).name(person.getName()).surname(person.getSurname())
-                .bornDate(person.getBornDate() != null ? LocalDate.parse(person.getBornDate()) : null)
-                .country(person.getCountry() != null ? Country.valueOf(person.getCountry()) : null)
+                .bornDate(Objects.nonNull(person.getBornDate()) ? LocalDate.parse(person.getBornDate()) : null)
+                .country(Objects.nonNull(person.getCountry()) ? Country.valueOf(person.getCountry()) : null)
                 .genre(person.getGenre()).build();
         }
         return personDTO;
@@ -93,8 +95,8 @@ public class PersonMapper {
      * @see #toDTO(Person)
      */
     public List<PersonDTO> toDTO(List<Person> persons) {
-        List<PersonDTO> result = null;
-        if (persons != null) {
+        List<PersonDTO> result = new ArrayList<>();
+        if (Objects.nonNull(persons)) {
             result = persons.stream().map(this::toDTO).collect(Collectors.toList());
         }
         return result;

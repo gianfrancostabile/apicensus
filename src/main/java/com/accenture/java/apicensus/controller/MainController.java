@@ -2,7 +2,6 @@ package com.accenture.java.apicensus.controller;
 
 import com.accenture.java.apicensus.utils.Endpoint;
 import com.accenture.java.apicensus.utils.RouteID;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +17,11 @@ public abstract class MainController extends RouteBuilder {
     @Value("${server.port}")
     private Integer SERVER_PORT;
 
+    /**
+     * Configure each MainController's sons
+     *
+     * @throws Exception the exception to catch
+     */
     @Override
     public void configure() throws Exception {
         restConfiguration().component("servlet")
@@ -34,8 +38,8 @@ public abstract class MainController extends RouteBuilder {
             .apiProperty("api.title", "API Census")
             .apiProperty("api.version", "0.0.1-SNAPSHOT");
 
-        onException(MismatchedInputException.class).to(Endpoint.DIRECT_BAD_REQUEST);
-
-        onException(Exception.class).to(Endpoint.DIRECT_INTERNAL_SERVER_ERROR);
+        onException(Exception.class)
+            .handled(true)
+            .to(Endpoint.DIRECT_INTERNAL_SERVER_ERROR);
     }
 }
