@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,7 +15,8 @@ import java.util.Objects;
 /**
  * @author Gian F. S.
  */
-@Data
+@Getter
+@Setter
 @ApiModel(description = "Represents the response after the post persons request")
 public class ResponseListDTO implements Serializable {
 
@@ -22,64 +24,66 @@ public class ResponseListDTO implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<PersonDTO> successList;
 
-    @ApiModelProperty(value = "List of ssns wrongly processed")
+    @ApiModelProperty(value = "List of ssn wrongly processed")
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private List<Object> errorList;
+    private List<Long> errorList;
 
     public ResponseListDTO() {
-        successList = new ArrayList<>();
-        errorList = new ArrayList<>();
+        this.initializeListIfNull();
     }
 
     /**
-     * Adds a person to the success list
-     * <br><br>
-     * If the value is <b>null</b> it won't be added.
+     * Initializes the success and error list
+     * if they are {@code null}.
      *
-     * @param personDTO the person instance to add
+     * @see Objects
+     * @see ArrayList
      */
-    public void addSuccess(PersonDTO personDTO) {
-        if (Objects.nonNull(personDTO)) {
-            successList.add(personDTO);
+    private void initializeListIfNull() {
+        if (Objects.isNull(this.successList)) {
+            this.setSuccessList(new ArrayList<>());
+        }
+        if (Objects.isNull(this.errorList)) {
+            this.setErrorList(new ArrayList<>());
         }
     }
 
     /**
      * Adds the people to the success list.
      * <br><br>
+     * If the success list is {@code null}, it will be initialized.<br>
      * If the list of people is {@code null} or <b>empty</b>,
      * no value will be added to the errors list.
      *
      * @param peopleList the list of wrong values for an ssn
+     * @see List
+     * @see PersonDTO
+     * @see #initializeListIfNull()
+     * @see Objects
      */
     public void addSuccess(List<PersonDTO> peopleList) {
+        this.initializeListIfNull();
         if (Objects.nonNull(peopleList) && !peopleList.isEmpty()) {
-            successList.addAll(peopleList);
+            this.successList.addAll(peopleList);
         }
-    }
-
-    /**
-     * Adds the object to the errors list.
-     * <br><br>
-     * If the value is <b>null</b>, it will change to "null".
-     *
-     * @param ssn the wrong value for a ssn
-     */
-    public void addError(Object ssn) {
-        errorList.add(Objects.nonNull(ssn) ? ssn : "null");
     }
 
     /**
      * Adds all objects to the errors list.
      * <br><br>
+     * If the error list is {@code null}, it will be initialized.<br>
      * If the list of objects is {@code null} or <b>empty</b>,
      * no value will be added to the errors list.
      *
      * @param ssnList the list of wrong values for an ssn
+     * @see List
+     * @see #initializeListIfNull()
+     * @see Objects
      */
-    public void addErrors(List<Object> ssnList) {
+    public void addErrors(List<Long> ssnList) {
+        this.initializeListIfNull();
         if (Objects.nonNull(ssnList) && !ssnList.isEmpty()) {
-            errorList.addAll(ssnList);
+            this.errorList.addAll(ssnList);
         }
     }
 
@@ -87,6 +91,9 @@ public class ResponseListDTO implements Serializable {
      * Returns the appropriate status code, it depends of
      * list values.
      * <br><br>
+     * <p>
+     * If success list and error list are {@code null}, will be initialized.
+     * </p>
      * <p>
      * List of possible status codes (SL -> Success List; EL -> Error List):
      * <ul>
@@ -108,21 +115,17 @@ public class ResponseListDTO implements Serializable {
      */
     @JsonIgnore
     public int getStatusCode() {
-        boolean isSuccessEmpty = getSuccessList().isEmpty(), isErrorEmpty = getErrorList().isEmpty();
-
-        int statusCode;
-        if (!isErrorEmpty) {
-            if (isSuccessEmpty) {
-                statusCode = 404;
-            } else {
-                statusCode = 207;
-            }
-        } else if (!isSuccessEmpty) {
-            statusCode = 200;
-        } else {
-            statusCode = 400;
+        this.initializeListIfNull();
+        boolean havePeople = !this.getSuccessList()
+            .isEmpty();
+        boolean haveError = !this.getErrorList()
+            .isEmpty();
+        int statusCode = 400;
+        if (havePeople) {
+            statusCode = haveError ? 207 : 200;
+        } else if (haveError) {
+            statusCode = 404;
         }
-
         return statusCode;
     }
 }

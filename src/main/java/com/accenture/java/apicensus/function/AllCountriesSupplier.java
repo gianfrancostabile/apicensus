@@ -15,7 +15,6 @@ public class AllCountriesSupplier implements Supplier<Country[]> {
      * Returns all countries from {@link Country} enum.
      *
      * @return all countries
-     *
      * @see Country
      */
     @Override

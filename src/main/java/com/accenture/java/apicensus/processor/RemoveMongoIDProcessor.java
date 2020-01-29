@@ -6,6 +6,8 @@ import org.apache.camel.Processor;
 import org.apache.camel.component.mongodb.MongoDbConstants;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 /**
  * The processor responsible to remove mongodb _id field
  *
@@ -25,16 +27,20 @@ public class RemoveMongoIDProcessor implements Processor {
      * want the _id field.
      *
      * @param exchange the camel exchange
-     *
      * @throws Exception the exception to catch
-     *
      * @see Exchange
+     * @see Objects#nonNull(Object)
      * @see MongoDbConstants
      * @see BasicDBObjectBuilder
      * @see com.mongodb.BasicDBObject
      */
     @Override
     public void process(Exchange exchange) {
-        exchange.getIn().setHeader(MongoDbConstants.FIELDS_FILTER, BasicDBObjectBuilder.start().add("_id", 0).get());
+        if (Objects.nonNull(exchange)) {
+            exchange.getIn()
+                .setHeader(MongoDbConstants.FIELDS_FILTER, BasicDBObjectBuilder.start()
+                    .add("_id", 0)
+                    .get());
+        }
     }
 }

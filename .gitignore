@@ -3,8 +3,8 @@ HELP.md
 !**/src/test/**
 **/main/resources/*
 
-!**/main/resources/application.properties
-!**/main/resources/context.xml
+!**/application.properties
+!**/context.xml
 
 ##############################
 ## Java

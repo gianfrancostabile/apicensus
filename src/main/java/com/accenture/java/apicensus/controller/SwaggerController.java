@@ -18,10 +18,14 @@ public class SwaggerController extends MainController {
      * @see Endpoint#REDIRECT_SWAGGER
      */
     @Override
-    public void configure() {
-        from("servlet://swagger-ui")
-            .routeId(RouteID.REDIRECT_SWAGGER)
-                .setHeader(Exchange.HTTP_RESPONSE_CODE, simple("308"))
-                .setHeader("location", simple(Endpoint.REDIRECT_SWAGGER));
+    public void configure() throws Exception {
+        super.configure();
+
+        rest()
+            .get("/swagger")
+                .apiDocs(false)
+                .route().routeId(RouteID.REDIRECT_SWAGGER.id())
+                    .setHeader(Exchange.HTTP_RESPONSE_CODE, simple("308"))
+                    .setHeader("location", simple(Endpoint.REDIRECT_SWAGGER));
     }
 }

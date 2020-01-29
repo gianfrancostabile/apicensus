@@ -2,17 +2,18 @@ package com.accenture.java.apicensus.entity;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import io.swagger.annotations.ApiModel;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 /**
  * @author Gian F. S.
@@ -20,31 +21,30 @@ import javax.validation.constraints.Size;
 @JsonDeserialize(builder = Person.PersonBuilder.class)
 @Builder
 @Getter
-@EqualsAndHashCode
+@Setter
 @Document(value = "people")
 @CompoundIndex(name = "unqSsnCountry", def = "{'ssn':1, 'country':1}", unique = true)
-@ApiModel(value = "Represents a person of the system")
-public class Person {
+public class Person implements Serializable {
 
     @NotNull
     @Min(1000000)
     @Max(999999999)
-    private Integer ssn;
+    private Long ssn;
 
-    @NotNull
+    @NotBlank
     private String name;
 
-    @NotNull
+    @NotBlank
     private String surname;
 
-    @NotNull
+    @NotBlank
     private String bornDate;
 
     @NotNull
     @Size(min = 2, max = 2)
     private String country;
 
-    @NotNull
+    @NotBlank
     private String genre;
 
     @JsonPOJOBuilder(withPrefix = "")

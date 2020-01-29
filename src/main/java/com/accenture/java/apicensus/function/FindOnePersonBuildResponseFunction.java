@@ -2,14 +2,16 @@ package com.accenture.java.apicensus.function;
 
 import com.accenture.java.apicensus.entity.Person;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mongodb.BasicDBObject;
 import org.apache.camel.Exchange;
+import org.apache.camel.InvalidPayloadException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.bson.json.JsonWriterSettings;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -19,7 +21,11 @@ import java.util.function.Function;
 @Component
 public class FindOnePersonBuildResponseFunction implements Function<Exchange, Optional> {
 
-    private Logger logger = LogManager.getLogger(this.getClass());
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private JsonWriterSettings jsonWriterSettings;
 
     /**
      * Returns and optional with the person.
@@ -29,23 +35,30 @@ public class FindOnePersonBuildResponseFunction implements Function<Exchange, Op
      * contains the person data.
      *
      * @param exchange the exchange
-     *
      * @return An optional whit the person data;
-     *      but an exception occurs, an empty
-     *      optional will be returned.
+     * but an exception occurs, an empty
+     * optional will be returned.
      */
     @Override
     public Optional apply(Exchange exchange) {
         Person person = null;
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(new Jdk8Module());
-            objectMapper.registerModule(new JavaTimeModule());
-            person = objectMapper.readValue(exchange.getIn().getBody(
-                BasicDBObject.class).toJson(), Person.class);
-        } catch (Exception e) {
-            logger.error("The person doesn't exists");
+
+        if (Objects.nonNull(exchange)) {
+            Logger logger = LogManager.getLogger(this.getClass());
+            try {
+                Optional<BasicDBObject> optionalDBObject = exchange.getIn()
+                    .getMandatoryBody(Optional.class);
+                if (optionalDBObject.isPresent()) {
+                    person = objectMapper.readValue(optionalDBObject.get()
+                        .toJson(jsonWriterSettings), Person.class);
+                }
+            } catch (InvalidPayloadException exception) {
+                logger.debug("The exchange body is null");
+            } catch (Exception exception) {
+                logger.error("The person doesn't exist");
+            }
         }
+
         return Optional.ofNullable(person);
     }
 }

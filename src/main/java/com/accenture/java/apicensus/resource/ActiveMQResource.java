@@ -8,10 +8,12 @@ import org.springframework.stereotype.Component;
  * @author Gian F. S.
  */
 @Component
-public class DefaultResource extends ExceptionCatcherResource {
+public class ActiveMQResource extends ExceptionCatcherResource {
 
     /**
-     * Creates default endpoints.
+     * Creates an activemq endpoint that
+     * redirects the request to another route
+     * to handle it.
      *
      * @throws Exception the exception
      */
@@ -19,8 +21,7 @@ public class DefaultResource extends ExceptionCatcherResource {
     public void configure() throws Exception {
         super.configure();
 
-        // A default endpoint, used for ProducerTemplate
-        from(Endpoint.DIRECT_DEFAULT_ENDPOINT).routeId(RouteID.DEFAULT_ROUTE)
-            .log("I'm a default endpoint");
+        from(Endpoint.ACTIVEMQ_INSERT_PEOPLE).routeId(RouteID.ACTIVEMQ_INSERT_PEOPLE.id())
+            .to(Endpoint.DIRECT_DO_INSERT_PEOPLE);
     }
 }

@@ -25,25 +25,25 @@ public class ExceptionHandlerResource extends ExceptionCatcherResource {
 
         // Handle the INTERNAL SERVER ERROR
         from(Endpoint.DIRECT_INTERNAL_SERVER_ERROR)
-            .routeId(RouteID.INTERNAL_SERVER_ERROR)
+            .routeId(RouteID.INTERNAL_SERVER_ERROR.id())
             .setHeader(Exchange.HTTP_RESPONSE_CODE, simple("500"))
             .to(Endpoint.DIRECT_SET_EMPTY_RESPONSELIST);
 
         // Handle the BAD REQUEST
         from(Endpoint.DIRECT_BAD_REQUEST)
-            .routeId(RouteID.BAD_REQUEST)
+            .routeId(RouteID.BAD_REQUEST.id())
             .setHeader(Exchange.HTTP_RESPONSE_CODE, simple("400"))
             .to(Endpoint.DIRECT_SET_EMPTY_RESPONSELIST);
 
         // Handle the MismatchedInputException
         from(Endpoint.DIRECT_MISMATCHED_INPUT_FILE)
-            .routeId(RouteID.MISMATCHED_INPUT_FILE)
-            .log("Cannot deserialize the file content to Person[] object: ${in.body}");
+            .routeId(RouteID.MISMATCHED_INPUT_FILE.id())
+            .log("Cannot deserialize the request to application object: ${in.body}");
 
         // Set the ResponseListDTO as body with a
         // list of ssn into the error list.
         from(Endpoint.DIRECT_SET_EMPTY_RESPONSELIST)
-            .routeId(RouteID.SET_EMPTY_RESPONSELIST)
+            .routeId(RouteID.SET_EMPTY_RESPONSELIST.id())
             .setBody(emptyResponseListSupplier);
     }
 }

@@ -15,7 +15,6 @@ public class EmptyResponseListSupplier implements Supplier<ResponseListDTO> {
      * Returns a {@link ResponseListDTO} instance.
      *
      * @return the {@link ResponseListDTO} instance
-     *
      * @see ResponseListDTO
      */
     @Override

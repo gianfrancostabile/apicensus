@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 public abstract class MainController extends RouteBuilder {
 
     @Value("${server.port}")
-    private Integer SERVER_PORT;
+    private Integer serverPort;
 
     /**
      * Configure each MainController's sons
@@ -33,13 +33,17 @@ public abstract class MainController extends RouteBuilder {
             .skipBindingOnErrorCode(false)
             // output using pretty print
             .dataFormatProperty("prettyPrint", "true")
-            .apiHost("localhost").port(SERVER_PORT).scheme("http")
-            .contextPath("/census").apiContextPath("/swagger").apiContextRouteId(RouteID.SWAGGER)
+            .apiHost("localhost")
+            .port(serverPort)
+            .contextPath("/census")
+            .apiContextPath("/swagger")
+            .apiContextRouteId(RouteID.SWAGGER.id())
             .apiProperty("api.title", "API Census")
-            .apiProperty("api.version", "0.0.1-SNAPSHOT");
+            .apiProperty("api.description", "Application responsible for returning the person's information by ssn.")
+            .apiProperty("api.version", "0.0.1-SNAPSHOT")
+            .apiProperty("api.contact.name", "Gian F. S.");
 
-        onException(Exception.class)
-            .handled(true)
+        onException(Exception.class).handled(true)
             .to(Endpoint.DIRECT_INTERNAL_SERVER_ERROR);
     }
 }

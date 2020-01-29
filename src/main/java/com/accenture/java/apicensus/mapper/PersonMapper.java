@@ -27,17 +27,26 @@ public class PersonMapper {
      * If not returns a Person ENTITY instance.
      *
      * @param personDTO the person DTO instance to transform.
-     *
      * @return a Person ENTITY; or <b>null</b> if the personDTO param
-     *          is null.
+     * is null.
      */
     public Person toEntity(PersonDTO personDTO) {
         Person person = null;
         if (Objects.nonNull(personDTO)) {
-            person = Person.builder().ssn(personDTO.getSsn()).name(personDTO.getName()).surname(personDTO.getSurname())
-                .bornDate(Objects.nonNull(personDTO.getBornDate()) ? personDTO.getBornDate().toString() : null)
-                .country(Objects.nonNull(personDTO.getCountry()) ? personDTO.getCountry().name() : null)
-                .genre(personDTO.getGenre()).build();
+            person = Person.builder()
+                .ssn(personDTO.getSsn())
+                .name(personDTO.getName())
+                .surname(personDTO.getSurname())
+                .bornDate(Objects.nonNull(personDTO.getBornDate()) ?
+                    personDTO.getBornDate()
+                        .toString() :
+                    null)
+                .country(Objects.nonNull(personDTO.getCountry()) ?
+                    personDTO.getCountry()
+                        .name() :
+                    null)
+                .genre(personDTO.getGenre())
+                .build();
         }
         return person;
     }
@@ -56,7 +65,9 @@ public class PersonMapper {
     public List<Person> toEntity(List<PersonDTO> persons) {
         List<Person> result = new ArrayList<>();
         if (Objects.nonNull(persons)) {
-            result = persons.stream().map(this::toEntity).collect(Collectors.toList());
+            result = persons.stream()
+                .map(this::toEntity)
+                .collect(Collectors.toList());
         }
         return result;
     }
@@ -68,37 +79,21 @@ public class PersonMapper {
      * If not returns a Person DTO instance.
      *
      * @param person the person ENTITY instance to transform.
-     *
      * @return a Person DTO; or <b>null</b> if the person param
-     *          is null.
+     * is null.
      */
     public PersonDTO toDTO(Person person) {
         PersonDTO personDTO = null;
         if (Objects.nonNull(person)) {
-            personDTO = PersonDTO.builder().ssn(person.getSsn()).name(person.getName()).surname(person.getSurname())
+            personDTO = PersonDTO.builder()
+                .ssn(person.getSsn())
+                .name(person.getName())
+                .surname(person.getSurname())
                 .bornDate(Objects.nonNull(person.getBornDate()) ? LocalDate.parse(person.getBornDate()) : null)
                 .country(Objects.nonNull(person.getCountry()) ? Country.valueOf(person.getCountry()) : null)
-                .genre(person.getGenre()).build();
+                .genre(person.getGenre())
+                .build();
         }
         return personDTO;
-    }
-
-    /**
-     * Transforms the Person ENTITY list to DTO list.
-     * <br><br>
-     * For each ENTITY, call the toDTO method.
-     *
-     * @param persons the persons ENTITY instance to transform.
-     * @return a list with DTOs; or <b>null</b> if persons param
-     * is null.
-     * @see java.util.stream.Stream
-     * @see #toDTO(Person)
-     */
-    public List<PersonDTO> toDTO(List<Person> persons) {
-        List<PersonDTO> result = new ArrayList<>();
-        if (Objects.nonNull(persons)) {
-            result = persons.stream().map(this::toDTO).collect(Collectors.toList());
-        }
-        return result;
     }
 }
